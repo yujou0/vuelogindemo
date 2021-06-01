@@ -1,36 +1,35 @@
-# This is a basic workflow to help you get started with Actions
-name: deploy
-
-# Controls when the action will run. 
+# Action 名稱
+name: Deploy
+# 觸發時機，當推送到分支 master 時
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+    branches: [ master ]
+# 執行的工作
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  # 工作名稱
+  deploy:
+    # 執行工作的虛擬機作業系統
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    # 工作步驟
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      # 步驟一：複製程式碼
+      - name: checkout
+        # 使用的 actions/checkout 複製程式碼
+        uses: actions/checkout@master
 
-      # Runs a single command using the runners shell
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@master
+      # 步驟二：編譯及部署
+      - name: buildAndDeploy
+        uses: JamesIves/github-pages-deploy-action@master 
+        # 步驟設定
         env:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }} # Settings > Secret 建立的 ACCESS_TOKEN
-          BRANCH: gh-pages # deploy 到 gh-pages 這個分支
-          FOLDER: dist # build 後的資料夾
-          BUILD_SCRIPT: npm install && npm run build # 執行指令
+          GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+          # 使用 master 分支的檔案
+          BASE_BRANCH: master
+          # 部署到 gh-pages 分支
+          BRANCH: gh-pages
+          # 編譯後要上傳的資料夾
+          FOLDER: dist
+          # 執行指令
+          BUILD_SCRIPT: npm install && npm run build
+          # 動作完成後清除檔案
+          CLEAN: true
